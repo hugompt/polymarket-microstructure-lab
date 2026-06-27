@@ -1,0 +1,40 @@
+# Secrets / env (the .env.example templates ARE tracked; real .env files are not)
+.env
+.env.*
+!.env.example
+*.env.local
+
+# Databases / data
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+npm-debug.log*
+.turbo/
+
+# OS / editor / local tooling
+.DS_Store
+.idea/
+.vscode/
+.claude/
+*.swp
+*.tsbuildinfo

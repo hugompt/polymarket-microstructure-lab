@@ -1,0 +1,76 @@
+# polymarket-microstructure-lab — full stack (Postgres + backend API + collector + dashboard).
+# READ-ONLY research. No service here trades, connects a wallet, or holds a key.
+#
+#   docker compose up --build
+#   API:        http://localhost:8000  (docs at /docs)
+#   Dashboard:  http://localhost:3000
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: lab
+      POSTGRES_PASSWORD: lab
+      POSTGRES_DB: lab
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lab -d lab"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      PML_DATABASE_URL: postgresql+psycopg://lab:lab@db:5432/lab
+      PML_LOG_LEVEL: INFO
+      # Set PML_TARGET_WALLET in a local .env (a PUBLIC address; never a private key).
+      PML_TARGET_WALLET: "${PML_TARGET_WALLET:-}"
+      PML_TARGET_PROFILE: "${PML_TARGET_PROFILE:-}"
+      PML_ASSETS: "BTC,ETH,SOL,XRP,DOGE"
+      PML_WINDOWS_MINUTES: "5,15"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    # Runs `alembic upgrade head` then serves (see backend/Dockerfile CMD).
+
+  collector:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      PML_DATABASE_URL: postgresql+psycopg://lab:lab@db:5432/lab
+      PML_ASSETS: "BTC,ETH,SOL,XRP,DOGE"
+      PML_WINDOWS_MINUTES: "5,15"
+      PML_WS_MAX_CONNECTIONS: "2"
+    depends_on:
+      db:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    # Wait for the API to apply migrations, then discover + collect continuously.
+    command: ["sh", "-c", "sleep 12 && python -m app discover && python -m app collect --assets BTC,ETH,SOL,XRP,DOGE --windows 5,15"]
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # Inlined at build time; must be reachable from the BROWSER, hence localhost.
+        NEXT_PUBLIC_API_BASE: "http://localhost:8000"
+    environment:
+      NEXT_PUBLIC_API_BASE: "http://localhost:8000"
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:
