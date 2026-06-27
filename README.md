@@ -20,6 +20,23 @@ up. Anyone can run it against their own target wallet with their own (public) co
 
 ---
 
+## Screenshots
+
+**Forward paper trading — the edge dies with latency.** The same decisions filled at six latencies;
+green at 0–100 ms, red at 250 ms+. By the time a real retail order would actually arrive, the profit
+is gone. This is the thesis in one picture.
+
+![Paper trading: realized PnL across the latency grid](docs/screenshots/paper-latency.webp)
+
+**Wallet PnL forensics — reconstructed, not the headline claim.** Three PnL figures kept strictly
+separate: $0 reported, **$1,695.71 reconstructed gross, $1,125.68 after fees** (~34% fee drag);
+52.4% win vs ~49.8% break-even, with the negative-edge entry zone flagged in the skeptic notes.
+*(The target wallet's identity is redacted here; the tool itself ships with no wallet baked in.)*
+
+![Wallet analysis: reconstructed PnL, break-even, and skeptic notes](docs/screenshots/wallet-analysis.png)
+
+---
+
 ## The question, and why it matters
 
 Crypto "prediction bot" wallets are routinely screenshotted on social media with eye-popping PnL
