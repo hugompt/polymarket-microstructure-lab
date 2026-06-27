@@ -35,6 +35,18 @@ separate: $0 reported, **$1,695.71 reconstructed gross, $1,125.68 after fees** (
 
 ![Wallet analysis: reconstructed PnL, break-even, and skeptic notes](docs/screenshots/wallet-analysis.png)
 
+**Market replay — the microstructure, reconstructed.** A resolved BTC 5-minute market replayed from
+recorded data: the Up/Down outcome probability converging to the result, and the top-of-book
+bid/ask and spread over the life of the window.
+
+![Market replay: outcome probability and order-book spread over the window](docs/screenshots/market-replay.png)
+
+**Strategy lab — backtests against a random baseline.** Every strategy is replayed over resolved
+markets and scored against random. Here momentum and buy-the-open both lose money after fees while
+the random baseline barely clears — more evidence the "edge" isn't directional prediction.
+
+![Strategy lab: backtest runs versus a random baseline](docs/screenshots/strategy-lab.png)
+
 ---
 
 ## The question, and why it matters
